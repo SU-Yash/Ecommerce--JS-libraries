@@ -1,0 +1,1431 @@
+<!doctype html>
+<html lang="en" ng-app='myApp'>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" content="text/html">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- AngularJS  -->
+    <script src = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js'></script>
+    <!-- TWBS Pagination -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twbs-pagination/1.4.2/jquery.twbsPagination.js"></script>
+    <!-- AngularJS Script -->
+    <script src="angular.js"></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-svg-round-progressbar/0.4.8/roundProgress.min.js"></script>
+
+
+    <!-- Styles -->
+    <style>
+      * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial;
+    }
+
+    .row {
+      display: -ms-flexbox; /* IE10 */
+      display: flex;
+      -ms-flex-wrap: wrap; /* IE10 */
+      flex-wrap: wrap;
+      padding: 0 4px;
+    }
+
+
+
+
+    /* Create four equal columns that sits next to each other */
+    .column {
+      flex: 30%;
+      max-width: 35%;
+      padding: 0 4px;
+    }
+
+    .column img {
+      margin-top: 8px;
+      vertical-align: middle;
+      border-color: black;
+      border-radius: 2px;
+    }
+      i.material-icons 
+      {
+        top: -1px;
+        vertical-align: middle;
+        position: relative;
+      }
+            
+      label{
+        color: white;
+      }
+
+      body{
+        font-family: Helvetica;
+        margin: 0;
+      }
+
+      h1,h2,h3{
+        margin: 0;
+        color: white;
+      }
+
+      input.ng-invalid.ng-touched, textarea.ng-invalid.ng-touched{
+        border: 2px solid red;
+      }
+
+      th, td{
+        color: white;
+        padding: 5px;
+      }
+
+      .show_details{
+        position: relative;
+        margin: auto;
+      }
+
+      .show_results{
+        position: relative;
+        margin: auto; 
+      }
+
+      .show_details_bar{
+        position: relative;
+        margin: auto;  
+      }
+
+      .show_collection{
+        position: relative;
+        margin: auto; 
+      }
+
+      #pagination>li.active>a {
+        background: black;
+        color: #fff;
+      }
+
+      #pagination>li>a {
+        background: white;
+        color: black;
+      }
+
+      img.photos_tab{
+        border-style: solid;
+        border-width: 10px;
+      }
+
+
+
+    </style>
+  </head>
+
+  <body ng-controller = 'myAppController'>
+    <div id = 'mainController' >
+      <div class = 'container-fluid '>
+        <div class ='col-md-8 mx-auto'>
+
+
+          <form id = 'searchForm' class ='bg-dark mt-5' ng-submit = '' novalidate name = 'searchForm' ng-model = 'searchForm'>
+            <h1 class = 'text-center p-3'>Product Search</h1>
+
+            <!-- FORM: KEYWORD -->
+            <div class = 'form-group form-inline pl-5'>
+              <label class = 'col-3 justify-content-start'>Keyword</label>
+              <input ng-required = true  ng-model = 'Keyword' type ='text' class = 'form-control col-8' name = 'Keyword' placeholder = 'Enter product name(eg. Iphone 8)'>
+            </div>
+      
+            <!--------------------------------------------------------------------------------------------------------------->
+
+            <!-- FORM: KEYWORD-ERROR -->
+            <div ng-show = 'searchForm.Keyword.$touched && searchForm.Keyword.$invalid' class = 'form-group form-inline pl-5'>
+              <label class = 'col-3 justify-content-start'></label>
+              <small style = "color:red; display:block; text-align:center;">Enter a Keyword</small>
+            </div>
+            <!--------------------------------------------------------------------------------------------------------------->
+
+            <!-- FORM: CATEGORIES -->
+            <div class = 'form-group form-inline pl-5'>
+                <label class = 'col-3 justify-content-start'>Categories</label>
+                <select ng-model = 'Categories' class = 'Categories custom-select w-25' name = 'Categories' id = 'Categories'>
+                  <option value =''>All Categories</option>
+                  <option ng-repeat= 'topic in categories'>{{topic}}</option>
+                </select>
+            </div>
+            <!--------------------------------------------------------------------------------------------------------------->
+
+            <!-- FORM: CONDITION -->
+            <div class='form-group form-inline pl-5'>
+              <label class = 'col-3 justify-content-start'>Condition</label>
+              <div class = 'form-check'>
+              <input id = 'New' class='form-check-input' type = 'checkbox' ng-model = 'ConditionNew' name = 'Condition' value = 'New'>
+              <label class = 'form-check-label pl-2 pr-2'>New</label>
+              </div>
+              <div class = 'form-check'>
+                  <input class='form-check-input' type = 'checkbox' ng-model = 'ConditionUsed' name = 'Condition' value = 'Used' >
+                  <label class = 'form-check-label pl-2 pr-2'>Used</label>
+              </div>
+              <div class = 'form-check'>
+                  <input class='form-check-input' type = 'checkbox' ng-model = 'ConditionUnspecified' name = 'Condition' value = 'Unspecified' >
+                  <label class = 'form-check-label pl-2 pr-2'>Unspecified</label>
+              </div>
+            </div>
+            <!--------------------------------------------------------------------------------------------------------------->
+
+            <!-- FORM: SHIPPING -->
+            <div class='form-group form-inline pl-5'>
+                <label class = 'col-3 justify-content-start'>Shipping</label>
+                <div class = 'form-check'>
+                <input class='form-check-input' type = 'checkbox' ng-model = 'ShippingLocal' name = 'Shipping' value = 'LocalShipping'>
+                <label class = 'form-check-label pl-2 pr-2'>Local Shipping</label>
+                </div>
+                <div class = 'form-check'>
+                    <input class='form-check-input' type = 'checkbox' ng-model = 'ShippingFree' name = 'Shipping' value = 'FreeShipping'>
+                    <label class = 'form-check-label pl-2 pr-2'>Free Shipping</label>
+                </div>
+            </div>
+            <!--------------------------------------------------------------------------------------------------------------->
+
+            <!-- FORM: DISTANCE -->
+            <div class = 'form-group form-inline pl-5'>
+                  <label class = 'col-3 justify-content-start'>Distance(Miles)</label>
+                  <input type ='text' class = 'form-control col-8'  ng-model = 'Distance' name = 'Distance' ng-model = 'Distance' placeholder="10">
+            </div>
+            <!--------------------------------------------------------------------------------------------------------------->
+            <!-- FORM: FROM -->
+            <div class = 'form-group form-inline pl-5'>
+                <label class = 'col-3 justify-content-start'>From</label>
+                <div class = 'form-group'>
+                  <input type = 'radio' name = 'loc1' ng-model = 'loc1' value = 'true' ng-click = 'loc1click()'>
+                  <label class = 'form-check-label pl-2'>Current Location</label>
+                </div>
+            </div>
+
+            <div class = 'form-group form-inline pl-5'>
+              <label class = 'col-3 justify-content-start'></label>
+              <div class ='form-group'>
+                <input type = 'radio' name = 'loc1' ng-model = 'loc1' value = 'false'>
+                <label class = 'form-check-label pl-2'>Other.Please specify zip code</label>
+              </div>
+            </div>
+            <!--------------------------------------------------------------------------------------------------------------->
+            <!-- FORM: GEONAMES- AUTOCOMPLETE -->
+            <div class = 'form-group form-inline pl-5'>
+              <label class = 'col-3 justify-content-start'></label>
+              <input ng-keyup="auto()" ng-disabled = "loc1=='true'" ng-required = "loc1=='false'" type ='text' class = 'form-control' name = 'ZipCodeText' ng-model = 'ZipCodeText' id ='ZipCodeText' ng-pattern='/^(\d{5}(-\d{4})?|[A-Z]\d[A-Z] *\d[A-Z]\d)$/'>
+            </div>
+
+            <!--------------------------------------------------------------------------------------------------------------->
+            <!-- FORM: ZIP-CODE-TEXT -->
+            <div ng-show = "searchForm.ZipCodeText.$touched && searchForm.ZipCodeText.$invalid && loc1 == 'false' && (!ZipCodeText.length)"  class = 'form-group form-inline pl-5'>
+              <label class = 'col-3 justify-content-start'></label>
+              <small style = "color:red; display:block; text-align:center;">Enter a ZipCode</small>
+            </div>
+            <!--------------------------------------------------------------------------------------------------------------->
+
+            <!-- FORM: IP-API ZIP-CODE -->
+            <input type='hidden' ng-model = 'apiZip' id = "ZipHere">
+            <div class = 'form-group form-inline pl-5 pb-5'>
+              <div class = 'col-8 justify-content-start form-inline'>
+
+                <div class ='pr-3'>
+                  <button type="submit" ng-click = 'submit()' ng-disabled = "searchForm.$invalid" class="search-button btn btn-secondary" id='button'><i class="material-icons">search</i>Search</button>
+                </div>
+
+                <div class = 'pl-2'>
+                  <button type="submit" class="btn btn-secondary" ng-click = 'reset()'><i class="material-icons">clear_all</i>Clear</button>
+                </div>
+
+                <div class = 'pl-2'>
+                  <button type="submit" class="btn btn-secondary" ng-click = '' id = 'butShow' ng-hide = 'true'>Clear</button>
+                </div>
+
+              </div>
+            </div>
+
+        </form>
+
+    </div> <!-- md-8 div -->
+    </div> <!-- container fluid div -->
+
+<script>
+  var json_objMerc;
+  var number_of_results;
+  ID = 0;
+</script>
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+
+<!-- RESULT - WISH LIST - BUTTONS -->
+
+
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<br>
+<div id = "ans" ng-show = 'showans==true'></div>
+    <!-- FAVOR TAB - WishList  -->
+    <div id = 'Favor-Table' ng-show= "show_favor==true">
+
+    </div>
+
+<!--------------------------------------------------------------------------------------------------------------->
+
+
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+
+ <!-- RESULT TAB -->
+ <div id='show_collection' class = 'show_collection' ng-show= "show_collection==true" style="width: 85%;">   
+
+
+    <!-- PROGRESS BAR  -->
+    <div id='progress-bar'> 
+    </div>
+
+    <!--------------------------------------------------------------------------------------------------------------->
+    
+    <div id="show_results" class = "show_results"  ng-show= "show_results==true" style="width: 85%;">
+      
+      
+      <div id = 'Results-Table-Page' ng-show = "show_results_page_table==true">
+
+        <!-- DETAILS-BUTTON  -->
+        <div class="container" ng-show="show_detail_button==true">
+           <div class="row justify-content-end">
+              <button class="btn btn-light"  ng-disabled="details_disabled==true" ng-click="DetailButtonPressed()">Details<i class="material-icons">keyboard_arrow_right</i></button>
+            </div>
+        </div>
+        <br>
+        <!--------------------------------------------------------------------------------------------------------------->
+
+        <!-- RESULTS TAB - Ebay Finding API  -->
+        <div id = 'Results-Table' ng-show = "show_results_table==true" style=" position: relative; margin: auto; width: 85%;">
+
+        </div>
+        <!--------------------------------------------------------------------------------------------------------------->
+        <br>
+        <!-- PAGINATION BAR -->
+        <div id = 'pager' style='background:black; width:300px; margin:0 auto;'>
+          <ul id='pagination' style ="background:black;" class='pagination-sm'></ul>
+        </div>
+      </div>
+
+        <script type="text/javascript">
+          var $pagination = $('#pagination'),
+          totalRecords = 0,
+          records = [],
+          items = [],
+          recPerPage = 10,
+          page = 1,
+          totalPages = 0;
+
+
+            /*shipping = "<table id='' class='bg-dark table table-hover' cellspacing='0' width='60%'><thead></thead><tbody id=''>";
+
+            if(!(item.hasOwnProperty("shippingInfo")) && (item.shippingInfo == '' || item.shippingInfo == null)){
+                shipInfo = '';
+            }
+            else{
+                if(!(item.shippingInfo[0].hasOwnProperty("shippingServiceCost")) && (item.shippingInfo[0].shippingServiceCost == '' || item.shippingInfo.shippingServiceCost == null)){
+                  shipCost = '';
+                }
+                else{
+                  shipCost = item.shippingInfo.shippingServiceCost;
+                }
+            }
+
+
+
+            shipping += shipCost;
+            console.log(shipping); */
+
+          function prepareURLeBayFindingApi(){
+              var key = $('#searchForm').find('input[name="Keyword"]').val();
+              //var cat = $('#searchForm').find('input[name="Categories"]').selected();
+              var cat = $('#Categories').val();
+              var catID;
+              var dist;
+              var news = false;
+              var used = false;
+              var unsp = false;
+
+              var localS = false;
+              var freeS = false;
+
+
+              if($('#searchForm').find('input[name="Distance"]').val() == ''){
+                dist = 10;
+              }
+              else{
+                dist = $('#searchForm').find('input[name="Distance"]').val();
+              }
+
+              var loc1 = $('input[name="loc1"]:checked').val();
+              var zipCode;
+
+              if(loc1 == 'true'){
+                //zipCode = $('#ZipHere').val();
+                zipCode = '90007';
+              }
+              else if(loc1 == 'false'){
+                zipCode = $('#searchForm').find('input[name="ZipCodeText"]').val();
+              }
+              
+               
+              var url = "Keyword=" + key + "&Categories=" + cat + "&Distance=" + dist + "&loc1=" + loc1 + "&zip=" + zipCode;
+
+              var con = [];
+              $.map($("input[name='Condition']:checked"), function(el){
+                if($(el).val() == 'New'){
+                    news = true;
+                    url += "&New=" + news;
+                    
+                }
+                else if($(el).val() == 'Used'){
+                    used = true;
+                    url += '&Used=' + used;
+                    
+                }
+                else if($(el).val() == 'Unspecified'){
+                    unsp = true;
+                    url += '&Unspecified=' + unsp;
+                    
+                }
+              });
+
+              if(news == false){url += "&New=" + news;}
+              if(used == false){url += "&Used=" + news;}
+              if(unsp == false){url += "&Unspecified=" + news;}
+              
+              //console.log(url);
+
+             var ship = [];
+              $.map($("input[name='Shipping']:checked"), function(el){
+                if($(el).val() == 'FreeShipping'){
+                    freeS = true;
+                    url += "&FreeShipping=" + freeS; 
+                    
+                }
+                else if($(el).val() == 'LocalShipping'){
+                    localS = true;
+                    url += '&LocalShipping=' + localS;
+                    
+                }
+              });
+
+              if(freeS == false){url += "&FreeShipping=" + freeS;}
+              if(localS == false){url += "&=LocalShipping" + localS;}
+              //console.log(url);
+              return url;
+
+          }
+
+          $(document).ready(function(){
+            //Extracting values
+            $("#button").click(function(){
+              //console.log("Button Clicked");
+              url = prepareURLeBayFindingApi();
+
+              $.ajax({
+                    type: "GET",
+                    url: "https://ecommerce-25534536.appspot.com/submit?" + url,
+                    success: function(response){
+                      console.log("Success: AJAX call to finding backend and finding API");
+                      var r = JSON.parse(response);
+                      //console.log(r.det);
+                      json_obj = r.det;
+                      generateResultTable();
+                    },
+                    error: function(error){
+                      console.log("Error encoutered");
+                    }
+              });
+              //generateResultTable();
+            });
+          });
+
+          function generateResultTable(){
+            //console.log(json_obj);
+            //console.log("Entered generateResultTable");
+            if(json_obj.hasOwnProperty("findItemsAdvancedResponse") && json_obj.findItemsAdvancedResponse[0].hasOwnProperty("searchResult") && json_obj.findItemsAdvancedResponse[0].searchResult[0].hasOwnProperty("item")){
+                records = json_obj.findItemsAdvancedResponse[0].searchResult[0].item;
+                //console.log(records.length);
+                totalRecords = records.length;
+                totalPages = Math.ceil(totalRecords / recPerPage);
+                //console.log("Total Records:" + totalRecords);
+                apply_pagination();
+            }
+            else{
+                //console.log("Not present");
+                error_html = "<div id = 'error_tab' class='container' ng-show='show_empty_error==true'><div class='alert alert-warning'>No records.</div></div>"
+                document.getElementById("ans").innerHTML = error_html;
+                angular.element(document.getElementById('mainController')).scope().show_results = false;  
+                angular.element(document.getElementById('mainController')).scope().show_page_table = false;
+                angular.element(document.getElementById('mainController')).scope().show_detail_button = false;
+                //angular.element(document.getElementById('mainController')).scope().error = true;
+            }
+          }
+
+          function apply_pagination(){
+            //console.log("Entered apply_pagination");
+            //items = records.slice(0,8);
+            //generate_table();
+                $pagination.twbsPagination({
+                      totalPages: totalPages,
+                      //visiblePages: 6,
+                      onPageClick: function (event, page1) {
+                            itemsIndex = Math.max(page1-1, 0) * recPerPage;
+                            endRec = (itemsIndex) + recPerPage;
+                            items = records.slice(itemsIndex, endRec);
+                            page = page1;
+                            generate_table();
+                      }
+
+                });
+                $("#pagination").removeData("twbsPagination");
+          }
+
+          function generate_table(){
+
+            //console.log("Entered generate_table");
+            html_text="<table id='' class='bg-dark table-responsive'><thead></thead><tbody id=''><tr><td>#</td><td style='width: 130px;'>Image</td><td style='width: 500px;'>Title</td><td style='width: 150px;'>Price</td><td style='width: 140px;'>Shipping</td><td style='width: 100px;'>Zip</td><td style='width: 200px;'>Seller</td></tr>"
+
+            //<td style='width: 150px;'>Wish List</td>  
+
+              for(var i=0; i<items.length; i++){
+                  link = items[i].itemId;
+                  //Name
+                  if(!items[i].hasOwnProperty("title")){
+                      name = "N/A";
+                  }
+                  else{
+                      //name = 'Suyash Sardar';
+                      name = items[i].title;
+                      //console.log(name);
+                      //console.log(name.charAt(6) != " ");
+
+                      if(name.length > 35){
+                        j = 35; 
+                        while(name.charAt(j-1) != " "){ 
+                          j -= 1;
+                        }
+
+                        name = name.substring(0,j-1);
+                        name += "...";
+                      }
+                      //console.log(name);                              
+                  }
+
+                  //Photo
+                  if(!items[i].hasOwnProperty("galleryURL")){
+                      photo = "N/A";
+                  }
+                  else{
+                      photo = items[i].galleryURL;            
+                  }
+                  
+                  //Price
+                  if(!items[i].hasOwnProperty("sellingStatus")){
+                      price = "N/A";
+                  }
+                  else if (!items[i].sellingStatus[0].hasOwnProperty("currentPrice")){
+                      price = "N/A";
+
+                  }
+                  else if (!items[i].sellingStatus[0].currentPrice[0].hasOwnProperty("__value__")){
+                      price = "N/A";
+                  } 
+                      
+                  else{
+                      price = items[i].sellingStatus[0].currentPrice[0].__value__;  
+
+                  }
+
+                  //Zip
+                  if(!items[i].hasOwnProperty("postalCode")){
+                      zip = "N/A";
+                  }
+                  else{
+                      zip = items[i].postalCode;          
+                  }
+
+                  //Seller
+                  if(!items[i].hasOwnProperty("sellerInfo")){
+                      seller = "N/A";
+                  } 
+                  else if (!items[i].sellerInfo[0].hasOwnProperty("sellerUserName")){
+                      seller = "N/A";
+                  }     
+                  else{
+                      seller = items[i].sellerInfo[0].sellerUserName;  
+
+                  }
+
+                  //Shipping
+                  if(!items[i].hasOwnProperty("shippingInfo") )
+                  {
+                      shipping = "N/A";
+
+                  }
+                  else if(!items[i].shippingInfo[0].hasOwnProperty("shippingServiceCost"))
+                  {
+                     shipping="N/A";
+                  }
+                  else{
+                      var number = /\d*\.?\d*/;
+                      shipping = items[i].shippingInfo[0].shippingServiceCost[0].__value__
+                      if(shipping == 0.0){
+                          shipping = "Free Shipping";
+                      }
+
+                      else if(number.test(shipping)){
+                          shipping = "$" + shipping;
+                      }    
+                      else{
+                      shipping = items[i].shippingInfo[0].shippingServiceCost[0].__value__;   
+                      }       
+                  } 
+
+                  index = (i+1) + (page-1) * recPerPage;
+                  //console.log(ID);
+                  if(ID == 0 ){
+                    html_text += "<tr>";
+                  }
+                  else{
+                    if(ID == link){
+                      //console.log("Entered");
+                      html_text += "<tr class = 'bg-secondary'>";
+                    }
+
+                  }
+                  html_text+= "<td> " + index + "</td>";
+                  html_text+="<td><a target='_blank' href =" + photo + "><img height=100 width=100 src='"+ photo + "'></a></td>";   
+                  html_text+="<td><a href='' onclick='linkClicked(" + link +  "); return false'>" + name + "</a></td>";
+
+
+                  html_text+="<td>$" + price + "</td>";
+                  html_text+="<td>" + shipping + "</td>";
+                  html_text+="<td style='width: 50px'>" + zip + "</td>";
+                  html_text+="<td>" + seller + "</td></tr>";
+                  
+                  /*
+                  html_text+= "<td style='align='right'><button class='btn btn-light' ng-click='' onclick='wish_list_item(" + link + ")'><i style = 'color: #000000' id ='" + link + "' class='material-icons'>add_shopping_cart</i></i></button></td></tr>";
+                  */
+              }
+
+                  html_text += "</tbody></table>"; 
+                  document.getElementById("Results-Table").innerHTML = html_text;  
+                  angular.element(document.getElementById('mainController')).scope().show_results = true;
+                  //console.log('html_text generated');       
+          }
+        </script>
+
+    </div>
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+    <br>
+    <br>   
+    <!-- ITEM TITLE -->  
+    <div align = 'center' ng-show = "show_title==true" id = 'show_title' style="width: 90%; position: relative; margin: auto;">
+
+    </div>
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+
+    <!-- LIST BUTTON - BACK -->  
+    <div class="row d-flex justify-content-end show_details_bar"  ng-show= "show_back==true" style="width: 90%;">
+      <button class="btn btn-light mr-auto p-2" ng-click="ListButtonPressed()"><i class="material-icons">keyboard_arrow_left</i>List</button>
+      
+      
+
+
+            <script>
+              /*
+              <a href="{{}}" target="_blank"><img src="http://csci571.com/hw/hw8/Images/facebook.png" height=40 width=40></a>
+                    <button class="btn btn-light" ng-click="" onclick="wish_list_item(wish)" ><i style = 'color: #000000' id = "wish" class="material-icons">add_shopping_cart</i></button>
+              */
+              function wish_list_item(divID)
+              {
+                if(document.getElementById(divID).innerHTML == "add_shopping_cart")
+                {
+                  document.getElementById(divID).innerHTML = "remove_shopping_cart";
+                  document.getElementById(divID).style.color = "#ac8504";
+                  //document.getElementById("check_star").classList.add(""); 
+                }
+                else
+                {
+                  document.getElementById(divID).innerHTML = "add_shopping_cart";
+                  document.getElementById(divID).style.color = "#000000";
+                  //document.getElementById("check_star").classList.add("");
+                }
+              }
+            </script>      
+
+          </div>
+          <br>
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+
+    <!-- NAV BAR  -->  
+    <div ng-show = "show_nav==true" style="width: 90%; position: relative; margin: auto;">
+      <ul class="nav nav-tabs justify-content-end" role="tablist">
+        <li class="nav-item">
+        <button style ="background:black;" id="product" class="btn btn-secondary" onclick="prodcut_clicked()" ng-click="prodcut_button_clicked()">Product</button>
+        </li>
+        <li class="nav-item">
+        <button style ="background:white" id="shipping" class="btn" onclick="shipping_clicked()" ng-click="shipping_button_clicked()">Shipping</button>
+        </li>
+        <li class="nav-item">
+        <button style ="background:white" id="seller" class="btn" onclick="seller_clicked()" ng-click="seller_button_clicked()">Seller</button>
+        </li>
+        <li class="nav-item">
+        <button style ="background:white" id="similar" class="btn" onclick="similar_clicked()" ng-click="similar_button_clicked()">Similar Items</button>
+        </li>
+      </ul>
+
+      <script>
+        /*
+                <li class="nav-item">
+        <button style ="background:white" id="photos" class="btn" onclick="photos_clicked()" ng-click="photos_button_clicked()">Photos</button>
+        </li>
+        */
+
+        function prodcut_clicked(){
+          document.getElementById("product").classList.add("btn-secondary");
+          //document.getElementById("photos").classList.remove("btn-secondary");
+          document.getElementById("shipping").classList.remove("btn-secondary");
+          document.getElementById("seller").classList.remove("btn-secondary");
+          document.getElementById("similar").classList.remove("btn-secondary");
+
+          document.getElementById("product").style.background = "black";
+          //document.getElementById("photos").style.background = "white";
+          document.getElementById("shipping").style.background = "white";
+          document.getElementById("seller").style.background = "white";
+          document.getElementById("similar").style.background = "white";
+
+          angular.element(document.getElementById('mainController')).scope().show_details = true;
+          //angular.element(document.getElementById('mainController')).scope().show_photos = false;
+          angular.element(document.getElementById('mainController')).scope().show_shipping = false;
+          angular.element(document.getElementById('mainController')).scope().show_seller = false;
+          angular.element(document.getElementById('mainController')).scope().show_similar = false;
+          angular.element(document.getElementById('mainController')).scope().show_more = false;
+
+        }
+
+        function photos_clicked(){
+          document.getElementById("product").classList.remove("btn-secondary");
+          //document.getElementById("photos").classList.add("btn-secondary");
+          document.getElementById("shipping").classList.remove("btn-secondary");
+          document.getElementById("seller").classList.remove("btn-secondary");
+          document.getElementById("similar").classList.remove("btn-secondary");
+
+          document.getElementById("product").style.background = "white";
+          //document.getElementById("photos").style.background = "black";
+          document.getElementById("shipping").style.background = "white";
+          document.getElementById("seller").style.background = "white";
+          document.getElementById("similar").style.background = "white";
+
+          angular.element(document.getElementById('mainController')).scope().show_details = false;
+          //angular.element(document.getElementById('mainController')).scope().show_photos = true;
+          angular.element(document.getElementById('mainController')).scope().show_shipping = false;
+          angular.element(document.getElementById('mainController')).scope().show_seller = false;
+          angular.element(document.getElementById('mainController')).scope().show_similar = false;
+          angular.element(document.getElementById('mainController')).scope().show_more = false;
+
+        }
+
+        function shipping_clicked(){
+          document.getElementById("product").classList.remove("btn-secondary");
+          //document.getElementById("photos").classList.remove("btn-secondary");
+          document.getElementById("shipping").classList.add("btn-secondary");
+          document.getElementById("seller").classList.remove("btn-secondary");
+          document.getElementById("similar").classList.remove("btn-secondary");
+
+          document.getElementById("product").style.background = "white";
+          //document.getElementById("photos").style.background = "white";
+          document.getElementById("shipping").style.background = "black";
+          document.getElementById("seller").style.background = "white";
+          document.getElementById("similar").style.background = "white";
+
+          angular.element(document.getElementById('mainController')).scope().show_details = false;
+          //angular.element(document.getElementById('mainController')).scope().show_photos = false;
+          angular.element(document.getElementById('mainController')).scope().show_shipping = true;
+          angular.element(document.getElementById('mainController')).scope().show_seller = false;
+          angular.element(document.getElementById('mainController')).scope().show_similar = false;
+          angular.element(document.getElementById('mainController')).scope().show_more = false;
+
+          //console.log(detailsApiJSON);
+
+        }
+
+        function seller_clicked(){
+          document.getElementById("product").classList.remove("btn-secondary");
+          //document.getElementById("photos").classList.remove("btn-secondary");
+          document.getElementById("shipping").classList.remove("btn-secondary");
+          document.getElementById("seller").classList.add("btn-secondary");
+          document.getElementById("similar").classList.remove("btn-secondary");
+          document.getElementById("product").style.background = "white";
+          //document.getElementById("photos").style.background = "white";
+          document.getElementById("shipping").style.background = "white";
+          document.getElementById("seller").style.background = "black";
+          document.getElementById("similar").style.background = "white";
+
+          angular.element(document.getElementById('mainController')).scope().show_details = false;
+          //angular.element(document.getElementById('mainController')).scope().show_photos = false;
+          angular.element(document.getElementById('mainController')).scope().show_shipping = false;
+          angular.element(document.getElementById('mainController')).scope().show_seller = true;
+          angular.element(document.getElementById('mainController')).scope().show_similar = false;
+          angular.element(document.getElementById('mainController')).scope().show_more = false;
+
+
+        }
+
+        function similar_clicked(){
+          document.getElementById("product").classList.remove("btn-secondary");
+          //document.getElementById("photos").classList.remove("btn-secondary");
+          document.getElementById("shipping").classList.remove("btn-secondary");
+          document.getElementById("seller").classList.remove("btn-secondary");
+          document.getElementById("similar").classList.add("btn-secondary");
+
+          document.getElementById("product").style.background = "white";
+          //document.getElementById("photos").style.background = "white";
+          document.getElementById("shipping").style.background = "white";
+          document.getElementById("seller").style.background = "white";
+          document.getElementById("similar").style.background = "black";
+
+          angular.element(document.getElementById('mainController')).scope().show_details = false;
+          //angular.element(document.getElementById('mainController')).scope().show_photos = false;
+          angular.element(document.getElementById('mainController')).scope().show_shipping = false;
+          angular.element(document.getElementById('mainController')).scope().show_seller = false;
+          angular.element(document.getElementById('mainController')).scope().show_similar = true;
+          angular.element(document.getElementById('mainController')).scope().show_more = true;
+          //console.log(ID);
+
+          url = "itemID=" + ID;
+          //console.log(url);
+          $.ajax({
+            type: "GET",
+            url: "https://ecommerce-25534536.appspot.com/similar?" + url,
+            success: function(response){
+              console.log("Success: AJAX call to similar API");
+              var r = JSON.parse(response);
+              json_objMerc = JSON.parse(r.det.body);
+              generate_table_similar();
+              //generateDetailsTable(r.det);
+            },
+            error: function(error){
+              console.log("Error encoutered");
+            }
+            });
+            
+            //document.getElementById("butShow").click();
+        }
+
+        function generate_table_similar(){
+            //console.log("Inside");
+
+                similarItemsMessage ="<table id='' class='bg-dark table table-hover' cellspacing='0' width='60%'><thead></thead><tbody id=''>";
+
+
+                items = json_objMerc.getSimilarItemsResponse.itemRecommendations.item;
+
+                var limit_results;
+
+                if(number_of_results){
+                  limit_results = items.length;
+                }
+                else{
+                  limit_results = 5;
+                }
+
+                for(var i=0; i<limit_results; i++){
+                item = items[i];
+
+                    if((!item.hasOwnProperty("imageURL")) || item.imageURL == ""){
+                        photo = '';
+                    }
+                    else{
+                        photo = item.imageURL;          
+                    }
+                    //similarItemsMessage +="<tr><td rowspan='2'><img src='"+ photo + "'></td>";
+
+                    if((!item.hasOwnProperty("title")) || item.title == ""){
+                        title = '';
+                    }
+                    else{
+                        title = item.title;         
+                    }
+
+                    link = item.itemId;
+
+                    //similarItemsMessage +="<td><a href='' id = 'similarLink' onclick='linkclicked(" + link +  "); return false'>"+ title + "</a></td></tr>"; 
+
+                    if(!item.hasOwnProperty("buyItNowPrice")){
+                        price = '';
+                    }
+                    else if (!item.buyItNowPrice.hasOwnProperty("__value__")){
+                        price = '';
+                    }
+                    else{
+                        price = item.buyItNowPrice.__value__;        
+                    }
+
+                    if(!item.hasOwnProperty("shippingCost")){
+                        Shipping = '';
+                    }
+                    else if (!item.shippingCost.hasOwnProperty("__value__")){
+                        Shipping = '';
+                    }
+                    else{
+                        Shipping = item.shippingCost.__value__;       
+                    }
+
+                    if(!item.hasOwnProperty("timeLeft")){
+                        timeLeft = '';
+                    }
+                    else{
+                        timeLeft = item.timeLeft; 
+                        //timeLeft = timeLeft.substring(1,timeLeft.length); 
+                        /*var i; 
+                        for(i = 0; i < timeLeft.length; i++){
+                          if(timeLeft.charAt(i) === 'D'){break;}
+                          i++;
+                        }*/
+                        //while(timeLeft.charAt(i) != 'D'){i++;} 
+                        timeLeft = timeLeft.substring(
+                          timeLeft.indexOf("P")+1, 
+                          timeLeft.indexOf("D")
+                        );   
+                        //timeLeft = timeLeft.substring(0,i);
+                    }
+                    
+
+                    
+                    // similarItemsMessage +="<tr><td><b>$" + price + "</b></td></tr>";
+                    similarItemsMessage += "<div class='card text-white bg-dark flex-row mb-1'><div class='card-header'><a target='_blank' href =" + photo + "><img width = 120 height = 120 src='"+ photo + "'></a></div><div class='card-body'><h6><a target='_blank' href = '"+ item.viewItemURL  +"' class='card-text' style='color:#48D1CC'>" + title + "</a></h6><h6 class='card-text' style='color:#9ACD32'>Price: $" + price + "</h6><h6 class='card-text' style='color:#FFA500'>Shipping Cost: " + Shipping + "</h6><h6 class='card-text'>Days Left: " + timeLeft + "</h6></div></div>";  
+                    /*"<tr><td><div class='card flex-row flex-wrap'><div class='card-header border-0'><img src='" + photo + "' alt=""></div><div class='card-block px-2'><a class='card-text' href='' id = 'similarLink' onclick='linkclicked(" + link +  "); return false'>"+ title + "</a><p class='card-text'>Description</p><a href='#'' class='btn btn-primary'>BUTTON</a></div><div class='w-100'></div><div class='card-footer w-100 text-muted'>FOOTER</div></div></td></tr>"*/
+                }
+
+                
+
+
+                //similarItemsMessage +="</tbody></table>";
+                //console.log(similarItemsMessage);
+                document.getElementById("show_similar").innerHTML = similarItemsMessage;
+
+                    
+            }
+
+
+      </script>
+    </div>
+    <br>
+
+
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+
+
+    <!-- ITEM DETAILS TAB - Ebay Details API - PRODUCT -->
+    <div id='show_details' class = 'show_details' ng-show= "show_details==true" style="width: 90%;" >
+  
+    </div>
+
+    <script>
+
+      var detailsApiJSON;
+      var shipCost;
+
+      function generateDetailsTable(json_objTwo){
+
+         //console.log(ID);
+
+        //console.log("Success generateDetailsTable");
+        if((json_objTwo.hasOwnProperty("ack") && json_obj.ack == 'Failure') || (json_objTwo.hasOwnProperty("Errors"))) {
+                              errorFirstPage("errorDiv", "Invalid Item Detail Requested");
+                              
+        }
+        else{
+            detailsApiJSON = json_objTwo;
+            // Constructing the table for the details of the product
+            html_text="<table id='' class='bg-dark table table-hover' cellspacing='0' width='60%'><thead></thead><tbody id=''>" 
+
+            item = json_objTwo.Item;
+
+            if(!(item.hasOwnProperty("Description")) && (item.Description == '' || itemDescription == null)){
+                desc = '';
+            }
+            else{
+               desc = item.Description; 
+            }
+
+            //Picture
+            if((!item.hasOwnProperty("PictureURL")) || item.PictureURL[0] == ""){
+                photo = "";
+            }
+            else{
+                photo = item.PictureURL[0];          
+            }
+
+            //Title
+            if((!item.hasOwnProperty("Title")) || item.Title == ""){
+                title = "";
+            }
+            else{
+                title = item.Title;         
+            }
+
+            //Subtitle
+            if((!item.hasOwnProperty("Subtitle")) || item.Subtitle == ""){
+                subtitle = "";
+            }
+            else{
+                subtitle = item.Subtitle;           
+            }
+
+            //Current Price
+            if(!item.hasOwnProperty("CurrentPrice")){
+                price = "";
+            } 
+            else if (!item.CurrentPrice.hasOwnProperty("Value")){
+                price = "";
+            }
+                
+            else{
+                price = item.CurrentPrice.Value;         
+            }
+
+            if((!item.hasOwnProperty("PostalCode")) || item.PostalCode == ""){
+                zip = '';
+            }
+            else{
+                zip = item.PostalCode;        
+            }
+
+            if((!item.hasOwnProperty("Location")) || item.Location == ""){
+                    loc = '';
+                }
+            else{
+                loc = item.Location;       
+            }
+
+            //returns
+            if(!item.hasOwnProperty("ReturnPolicy")){
+                ret = '';
+            } 
+            else if(!item.ReturnPolicy.hasOwnProperty("ReturnsAccepted")){
+                ret = '';
+            }
+            else{
+                ret = item.ReturnPolicy.ReturnsAccepted;       
+            }
+            
+            if(ret == 'Returns Accepted'){
+                if(item.ReturnPolicy.hasOwnProperty("ReturnsWithin")){
+                    returnPolicy = 'Returns Accepted within ' + item.ReturnPolicy.ReturnsWithin ;
+                }
+                else{
+                    returnPolicy = 'Returns Accepted';
+                 }
+                }
+            else{
+                    returnPolicy = 'Returns not Accepted';
+            }
+
+            //nameValueList
+            if(!item.hasOwnProperty("ItemSpecifics")){
+                nameValueList = "";
+            } 
+            else if (!item.ItemSpecifics.hasOwnProperty("NameValueList")){
+                nameValueList = "";
+            }
+            else{
+                nameValueList = item.ItemSpecifics.NameValueList;       
+            }
+
+            //seller
+            if(!item.hasOwnProperty("Seller")){
+                seller = "";
+            } 
+            else if (!item.Seller.hasOwnProperty("UserID")){
+                seller = "";
+            }
+            else{
+                seller = item.Seller.UserID;       
+            }
+
+            //if(photo != ''){html_text+="<tr><td><b>&nbsp&nbspProduct Images<b></td><td>&nbsp&nbsp<a href ='' onclick='' >View Product Images Here</a></td></tr>";}
+            if(title != ''){html_text+="<tr><td><b>&nbsp&nbspSubtitle<b></td><td>&nbsp&nbsp" + title + "</td></tr>";}
+            if(subtitle != ''){html_text+="<tr><td><b>&nbsp&nbspSubtitle<b></td><td>&nbsp&nbsp" + subtitle + "</td></tr>";}
+            if(price != ''){html_text+="<tr><td><b>&nbsp&nbspPrice<b></td><td>&nbsp&nbsp" + price + " " + "USD </td></tr>";} 
+            if(loc != '' || zip != ''){html_text+="<tr><td><b>&nbsp&nbspPostal<b></td><td>&nbsp&nbsp" + loc + "," + zip + "</td></tr>";}
+            if(seller != ''){html_text+="<tr><td><b>&nbsp&nbspSeller<b></td><td>&nbsp&nbsp" + seller + "</td></tr>";}
+            if(returnPolicy != ''){html_text+="<tr><td><b>&nbsp&nbspReturn Policy(US)<b></td><td>&nbsp&nbsp" + returnPolicy + "</td></tr>";}
+        
+            for(var i = 0; i < nameValueList.length; i++){
+                nam = nameValueList[i].Name;
+                val = nameValueList[i].Value[0];
+                html_text+="<tr><td><b>&nbsp&nbsp" + nam + "<b></td><td>&nbsp&nbsp" + val + "</td></tr>";
+            }
+            if(nameValueList.length == 0){
+                html_text+="<tr><td><b>No Detail Info from Seller<b></td><td bgcolor='#d5d5d5'</td></tr>" 
+            }
+            html_text += "</tbody></table>"; 
+            document.getElementById("show_details").innerHTML = html_text; 
+            document.getElementById("show_title").innerHTML = "<b>" + item.Title + "</b>";
+
+
+                                  //Photos:
+            photosURL = "title=" + item.Title; 
+
+            $.ajax({
+              type: "GET",
+              url: "https://ecommerce-25534536.appspot.com/photos?" + photosURL,
+              success: function(response){
+                console.log("Success: Call to Photos API");
+                //console.log(response);
+                var r_photo = JSON.parse(response);
+                photos = JSON.parse(r_photo.det);
+
+                link1 = photos.items[0].link;
+                link2 = photos.items[1].link;
+                link3 = photos.items[2].link;
+                link4 = photos.items[3].link;
+                link5 = photos.items[4].link;
+                link6 = photos.items[5].link;
+                link7 = photos.items[6].link;
+                link8 = photos.items[7].link;
+
+
+                insertPhotos = "<div class='row'><div class='column'><a target='_blank' href =" + link1 + "><img class = 'photos_tab' src='" + link1 + "' style='width:100%'></a><a target='_blank' href =" + link2 + "><img class = 'photos_tab' src='"+ link2 +"' style='width:100%'></a></div><div class='column'><a target='_blank' href =" + link3 + "><img class = 'photos_tab' src='"+ link3 +"' style='width:100%'></a><a target='_blank' href =" + link4 + "><img class = 'photos_tab' src='"+ link4 +"' style='width:100%'></a><a target='_blank' href =" + link5 + "><img class = 'photos_tab' src='"+ link5 +"' style='width:100%'></a></div><div class='column'><a target='_blank' href =" + link6 + "><img class = 'photos_tab' src='"+ link6 +"' style='width:100%'></a><a target='_blank' href =" + link7 + "><img class = 'photos_tab' src='"+ link7 +"' style='width:100%'></a><a target='_blank' href =" + link8 + "><img class = 'photos_tab' src='"+ link8 +"' style='width:100%'></a></div></div>"
+                document.getElementById("show_photos").innerHTML = insertPhotos;
+                //console.log(insertPhotos);
+
+
+                
+                //json_objMerc = JSON.parse(r.det.body);
+                //generate_table_similar();
+                //generateDetailsTable(r.det);
+                //console.log(r.det);
+                
+              },
+              error: function(error){
+                console.log("Error encoutered");
+              }
+              });
+
+
+
+            //SHIPPING
+            shipping = "<table id='' class='bg-dark table table-hover' cellspacing='0' width='60%'><thead></thead><tbody id=''>"; 
+            itemShippings = json_obj.findItemsAdvancedResponse[0].searchResult[0].item;
+            for(var i = 0; i < itemShippings.length; i++){
+              //console.log(ID);
+              //console.log(itemShipping[i].itemId);
+              //console.log(itemShipping[i].itemId == ID);
+              if(itemShippings[i].itemId == ID){
+                //console.log('found');
+                break;
+              }
+            }
+            itemShipping = itemShippings[i];
+            //console.log(itemShipping[i].itemId);
+            if(!(itemShipping.hasOwnProperty("shippingInfo")) && (itemShipping.shippingInfo == '' || itemShipping.shippingInfo == null)){
+                shippingInfo = '';
+            }
+            else{
+                if(!(itemShipping.shippingInfo[0].hasOwnProperty("shippingServiceCost")) && (itemShipping.shippingInfo[0].shippingServiceCost == '' || itemShipping.shippingInfo[0].shippingServiceCost == null) && !(itemShipping.shippingInfo[0].shippingServiceCost[0].hasOwnProperty("__value__")) && (itemShipping.shippingInfo[0].shippingServiceCost[0].__value__ == '' || itemShipping.shippingInfo[0].shippingServiceCost[0].__value__ == null)){
+                  shippingCost = '';
+                }
+                else{
+                  shippingCost = itemShipping.shippingInfo[0].shippingServiceCost[0].__value__;
+                  if(shippingCost == "0.0"){
+                    shippingCost = "Free Shipping";
+                  }
+                }
+
+                if(!(itemShipping.shippingInfo[0].hasOwnProperty("shipToLocations")) && (itemShipping.shippingInfo[0].shipToLocations == '' || itemShipping.shippingInfo[0].shipToLocations == null)){
+                  locations = '';
+                }
+                else{
+                  locations = itemShipping.shippingInfo[0].shipToLocations[0];
+                }
+
+                if(!(itemShipping.shippingInfo[0].hasOwnProperty("handlingTime")) && (itemShipping.shippingInfo[0].handlingTime == '' || itemShipping.shippingInfo[0].handlingTime == null)){
+                   handling = '';
+                }
+                else{
+                  handling = itemShipping.shippingInfo[0].handlingTime;
+
+                  if(handling == '1' || handling == '0'){
+                    handling = handling + ' Day';
+                  }
+                  else{
+                    handling = handling + ' Days';
+                  }
+
+                }
+
+                if(!(itemShipping.shippingInfo[0].hasOwnProperty("expeditedShipping")) && (itemShipping.shippingInfo[0].expeditedShipping == '' || itemShipping.shippingInfo[0].expeditedShipping == null)){
+                  expeditedShipping = '';
+                }
+                else{
+                  expeditedShipping = itemShipping.shippingInfo[0].expeditedShipping[0];
+                  if(expeditedShipping == 'true'){
+                    expeditedShipping = "<i style = 'color: green' class='material-icons'>done</i>";
+                  }
+                  else{
+                    expeditedShipping = "<i style = 'color: red' class='material-icons'>clear</i>";
+                  }
+                }
+
+
+                if(!(itemShipping.shippingInfo[0].hasOwnProperty("oneDayShippingAvailable")) && (itemShipping.shippingInfo[0].oneDayShippingAvailable == '' || itemShipping.shippingInfo[0].oneDayShippingAvailable == null)){
+                  oneDayShippingAvailable = '';
+                }
+                else{
+                  oneDayShippingAvailable = itemShipping.shippingInfo[0].oneDayShippingAvailable[0];
+                  if(oneDayShippingAvailable == 'true'){
+                    oneDayShippingAvailable = "<i style = 'color: green' class='material-icons'>done</i>";
+                  }
+                  else{
+                    oneDayShippingAvailable = "<i style = 'color: red' class='material-icons'>clear</i>";
+                  }
+                }
+
+
+                if(!(itemShipping.hasOwnProperty("returnsAccepted")) && (itemShipping.returnsAccepted == '' || itemShipping.returnsAccepted == null)){
+                  returnsAccepted = '';
+                }
+                else{
+                  returnsAccepted = itemShipping.returnsAccepted;
+                  if(returnsAccepted == 'true'){
+                    returnsAccepted = "<i style = 'color: green' class='material-icons'>done</i>";
+                  }
+                  else{
+                    returnsAccepted = "<i style = 'color: red' class='material-icons'>clear</i>";
+                  }
+                }
+
+              }
+
+              //console.log(shippingCost);
+              //console.log(locations);
+              //console.log(handling);
+              //console.log(expeditedShipping);
+              //console.log(oneDayShippingAvailable);
+              //console.log(returnsAccepted);
+
+            if(shippingCost != ''){shipping += "<tr><td><b>&nbsp&nbspShipping Cost<b></td><td>&nbsp&nbsp" + shippingCost + "</td></tr>";}
+            if(locations != ''){locations += "<tr><td><b>&nbsp&nbspShipping Locations<b></td><td>&nbsp&nbsp" + locations + "</td></tr>";}
+            if(handling != ''){shipping += "<tr><td><b>&nbsp&nbspHandling Time<b></td><td>&nbsp&nbsp" + handling + "</td></tr>";}
+            if(expeditedShipping != ''){shipping += "<tr><td><b>&nbsp&nbspExpedited Shipping<b></td><td>&nbsp&nbsp" + expeditedShipping + "</td></tr>";} 
+            if(oneDayShippingAvailable != ''){shipping += "<tr><td><b>&nbsp&nbspOne Day Shipping<b></td><td>&nbsp&nbsp" + oneDayShippingAvailable + "</td></tr>";}
+            if(returnsAccepted != ''){
+              shipping += "<tr><td><b>&nbsp&nbspReturns Accepted<b></td><td>&nbsp&nbsp" + returnsAccepted + "</td></tr>";}
+
+            shipping += "</tbody></table>";
+            document.getElementById('show_shipping').innerHTML = shipping;
+
+
+
+            //SELLER
+            seller = "<table id='' class='bg-dark table table-hover' cellspacing='0' width='60%'><thead></thead><tbody id=''>";   
+            if(!(item.hasOwnProperty("Seller")) && (item.Seller == '' || item.Seller == null)){
+                sellerInfo = '';
+            }
+            else{
+                if(!(item.Seller.hasOwnProperty("UserID")) && (item.Seller.UserID == '' || item.Seller.UserID == null)){
+                  UserID = '';
+                }
+                else{
+                  UserID = item.Seller.UserID;
+                }
+
+                if(!(item.Seller.hasOwnProperty("FeedbackScore")) && (item.Seller.FeedbackScore == '' || item.Seller.FeedbackScore == null)){
+                  FeedbackScore = '';
+                }
+                else{
+                  FeedbackScore = item.Seller.FeedbackScore;
+                }
+
+                if(!(item.Seller.hasOwnProperty("PositiveFeedbackPercent")) && (item.Seller.PositiveFeedbackPercent == '' || item.Seller.PositiveFeedbackPercent == null)){
+                  Popularity = '';
+                }
+                else{
+                  Popularity = item.Seller.PositiveFeedbackPercent;
+                }
+
+                if(!(item.Seller.hasOwnProperty("FeedbackRatingStar")) && (item.Seller.FeedbackRatingStar == '' || item.Seller.FeedbackRatingStar == null)){
+                  FeedbackRatingStarColor = '';
+                }
+                else{
+                  FeedbackRatingStarColor = item.Seller.FeedbackRatingStar;
+                  if(FeedbackScore < 10000){
+                    FeedbackRatingStar = "<i style = 'color:" + FeedbackRatingStarColor + "'class='material-icons'>stars</i>";
+                  }
+                  else if(FeedbackScore > 10000){
+                    FeedbackRatingStar= "<i style = 'color:"+ FeedbackRatingStarColor +"' class='material-icons'>star_border</i>";
+                  }
+                }
+
+                if(!(item.Seller.hasOwnProperty("TopRatedSeller")) && (item.Seller.TopRatedSeller == '' || item.Seller.TopRatedSeller == null)){
+                  TopRatedSeller = '';
+                }
+                else{
+                  TopRatedSeller = item.Seller.TopRatedSeller;
+                  if(TopRatedSeller == true){
+                    TopRatedSeller = "<i style = 'color: green' class='material-icons'>done</i>";
+                  }
+                  else{
+                    TopRatedSeller = "<i style = 'color: red' class='material-icons'>clear</i>";
+                  }
+                }
+
+              }
+
+                if(!(item.hasOwnProperty("Storefront")) && (item.Storefront == '' || item.Storefront == null)){
+                  Storefront = '';
+                }
+                else{
+
+                    Storefront = 'Present';
+
+                    if(!(item.Storefront.hasOwnProperty("StoreName")) && (item.Storefront.StoreName == '' || item.Storefront.StoreName == null)){
+                      StoreName = '';
+                    }
+                    else{
+                      StoreName = item.Storefront.StoreName;
+                    }
+
+                   if(!(item.Storefront.hasOwnProperty("StoreURL")) && (item.Storefront.StoreURL == '' || item.Storefront.StoreURL == null)){
+                      StoreURL = '';
+                    }
+                    else{
+                      StoreURL = item.Storefront.StoreURL;
+                    }
+                  
+                }
+
+            if(UserID != ''){seller += "<tr><td colspan = '2' align='center'><b>&nbsp&nbsp" + UserID + "<b></td></tr>";}
+            if(FeedbackScore != ''){seller += "<tr><td><b>&nbsp&nbspFeedback Score<b></td><td>&nbsp&nbsp" + FeedbackScore + "</td></tr>";}
+            if(Popularity != ''){seller += "<tr><td><b>&nbsp&nbspPopularity<b></td><td>&nbsp&nbsp" + Popularity + "</td></tr>";}
+            if(FeedbackRatingStar != ''){seller += "<tr><td><b>&nbsp&nbspFeedback Rating Star<b></td><td>&nbsp&nbsp" + FeedbackRatingStar + "</td></tr>";} 
+            if(TopRatedSeller != ''){seller += "<tr><td><b>&nbsp&nbspTop Rated<b></td><td>&nbsp&nbsp" + TopRatedSeller + "</td></tr>";}
+            if(Storefront != ''){
+              if(StoreName != ''){seller += "<tr><td><b>&nbsp&nbspStore Name<b></td><td>&nbsp&nbsp" + StoreName + "</td></tr>";}
+              if(StoreURL != ''){seller += "<tr><td><b>&nbsp&nbspBuy Product At<b></td><td><a target='_blank' href =" + StoreURL + ">&nbsp&nbspStore</td></tr>";}
+            }
+
+            seller += "</tbody></table>";
+            document.getElementById('show_seller').innerHTML = seller;
+
+
+            //console.log(FeedbackScore);
+            //console.log(FeedbackRatingStar);
+            //console.log(Popularity);
+            //console.log(TopRatedSeller);
+            //console.log(StoreName);
+            //console.log(StoreURL);
+
+
+
+          }
+      }
+
+        function linkClicked(link){
+          //console.log("Link Pressed");
+          angular.element(document.getElementById('mainController')).scope().show_title = true;
+          angular.element(document.getElementById('mainController')).scope().show_details = true;
+          angular.element(document.getElementById('mainController')).scope().show_nav = true;
+          angular.element(document.getElementById('mainController')).scope().show_back = true;
+          angular.element(document.getElementById('mainController')).scope().show_results = false;
+          ID = link;
+          url = "itemID=" + link;
+          $.ajax({
+            type: "GET",
+            url: "https://ecommerce-25534536.appspot.com/details?" + url,
+            success: function(response){
+              //console.log("Success: AJAX call to details API");
+              var r = JSON.parse(response);
+
+              //console.log(r.det);
+              generateDetailsTable(r.det);
+            },
+            error: function(error){
+              console.log(error);
+            }
+            });
+
+            document.getElementById("butShow").click();
+
+        }
+
+    </script>
+
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+    
+    <!-- ITEM DETAILS TAB - Ebay Details API - PHOTOS -->
+    <div id='show_photos' class='show_photos' ng-show='show_photos==true' style="text-align: center; width: 90%; position: relative; margin: auto;">
+        <p> Photos</p>
+    </div>
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+    
+    <!-- ITEM DETAILS TAB - Ebay Details API - SHIPPING  -->
+    <div id='show_shipping' class='show_shipping' ng-show='show_shipping==true' style="width: 90%; position: relative; margin: auto;">
+        <p>Shipping</p>
+    </div>
+
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+        <!-- ITEM DETAILS TAB - Ebay Details API - SELLER  -->
+    <div id='show_seller' class='show_seller' ng-show='show_seller==true' style="width: 90%; position: relative; margin: auto;">
+        
+    </div>
+
+<!------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------->
+    <!-- ITEM DETAILS TAB - Ebay Details API - Similar Items  -->
+    <div id='show_similar' class='show_similar' ng-show='show_similar==true' style="width: 90%; position: relative; margin: auto;">
+        
+    </div>
+
+    <!-- More Items  -->
+    <div id='show_more' class='show_more offset-md-5' ng-show='show_more==true' style = "text-align: center; width: 90%; position: relative; margin: auto;">
+        <button style = "text-align: center; background: black;" id="show_more_button"  class="btn btn-secondary" onclick="show_more_change()" ng-click="">Show More</button>
+        <script>
+          function show_more_change()
+          {
+             //var show_more_x = document.getElementById('show_more_button').classList;
+             if(document.getElementById('show_more_button').innerHTML === 'Show More')
+             {
+                document.getElementById('show_more_button').innerHTML = 'Show Less'
+                number_of_results = true;
+                generate_table_similar();
+             }
+             else{
+                document.getElementById('show_more_button').innerHTML = 'Show More'
+                number_of_results = false;
+                generate_table_similar();
+             }
+          }
+        </script>
+        
+  </div>
+
+
+
+  </div>
+
+</div> <!-- End of Controller-->
+
+</body>
+</html>
